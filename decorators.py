@@ -3,14 +3,13 @@ from datetime import datetime
 import time
 
 # Set up logging
-logging.basicConfig(filename='task_manager.log', level=logging.INFO, format= '%(asctime)s:%(levelname), %(message)s')
-
+logging.basicConfig(filename='task_manager.log', level=logging.INFO, format='%(asctime)s: %(levelname)s %(message)s')
 
 def log_action(func):
     """Decorator to log task actions.
 
-    This decorator logs the function name and its arguments 
-    to the 'task_manager.log' file whenever the decorated 
+    This decorator logs the function name and its arguments
+    to the 'task_manager.log' file whenever the decorated
     function is called.
 
     Args:
@@ -19,17 +18,20 @@ def log_action(func):
     Returns:
         The wrapper function.
     """
+
     def wrapper(*args, **kwargs):
         current_datetime = datetime.now()
         logging.info(f"{current_datetime}: Executing function: {func.__name__} with args: {args}, kwargs: {kwargs}")
         result = func(*args, **kwargs)
         return result
+
     return wrapper
+
 
 def timer(func):
     """Decorator to measure execution time of a function.
 
-    This decorator calculates and logs the time taken 
+    This decorator calculates and logs the time taken
     for the decorated function to execute.
 
     Args:
@@ -38,11 +40,13 @@ def timer(func):
     Returns:
         The wrapper function.
     """
+
     def wrapper(*args, **kwargs):
         start_time = time.time()
         result = func(*args, **kwargs)
         end_time = time.time()
         total_time = end_time - start_time
-        logging.info(f"Funtion: {func.__name__} excuted in: {total_time} seconds")
+        logging.info(f"Function: {func.__name__} executed in: {total_time} seconds")
         return result
+
     return wrapper

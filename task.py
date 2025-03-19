@@ -19,16 +19,19 @@ class TaskManager:
 
     def load_tasks(self):
         """Load tasks from the specified file."""
-        with open(self.filename, 'r') as f:
-            for line in f:
-                task_name, due_date, completed, description = line.strip().split(',')
-                new_task = {
-                    "name": task_name,
-                    "due_date": due_date,
-                    "completed": completed == "True",
-                    "description": description
-                }
-                self.tasks.append(new_task)  # Add task to queue
+        try:
+            with open(self.filename, 'r') as f:
+                for line in f:
+                    task_name, due_date, completed, description = line.strip().split(',')
+                    new_task = {
+                        "name": task_name,
+                        "due_date": due_date,
+                        "completed": completed == "True",
+                        "description": description
+                    }
+                    self.tasks.append(new_task)  # Add task to queue
+        except FileNotFoundError:
+            print("File not found. Creating a new file.")
 
 
     @log_action
@@ -48,7 +51,6 @@ class TaskManager:
             "description": description
         }
         self.tasks.append(new_task)  # Add task to queue
-
         self.save_tasks_to_file()
 
     @log_action
@@ -59,14 +61,18 @@ class TaskManager:
             return
 
         # Print tasks in the order they were added
-        for index, task in enumerate(self.tasks):
-            print(self.task_to_string(task))
+        index = 1
+        for task in self.tasks:
+            print(f"{index}. {self.task_to_string(task)}")
+            index += 1
 
     @log_action
     def mark_complete(self, task_index):
         """Mark a task as complete."""
         if 0 <= task_index < len(self.tasks):
             task = self.tasks[task_index]
+            task["completed"] = True
+            self.tasks.remove(task)  # Remove the completed task from the queue
             self.save_completed_task(task)  # Save the completed task to a file
             self.save_tasks_to_file()
             print(f"Task '{task['name']}' marked as complete.")
